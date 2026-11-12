@@ -1,0 +1,128 @@
+<footer class="foot">
+  <div class="container">
+    <div class="foot__top">
+      <div class="foot__brand">
+        <a href="#" class="foot__logo" aria-label="Inicio">muévete<span>.</span></a>
+        <p>Recurso educativo interactivo sobre actividad física y bienestar.</p>
+      </div>
+      <nav class="foot__nav" aria-label="Navegación del pie de página">
+        <a href="#inicio">Inicio</a>
+        <a href="#que-es">¿Qué es?</a>
+        <a href="#beneficios">Beneficios</a>
+        <a href="#recomendaciones">Recomendaciones</a>
+        <a href="#pausas">Pausas activas</a>
+        <a href="#quiz">Quiz</a>
+      </nav>
+    </div>
+
+    <div class="foot__sources">
+      <h4>Fuentes consultadas</h4>
+      <ul>
+        <li>Organización Mundial de la Salud (OMS) — <em>Directrices sobre actividad física y hábitos sedentarios</em>, 2020.</li>
+        <li>Centers for Disease Control and Prevention (CDC) — <em>Physical Activity Guidelines for Americans</em>, 2.ª ed., 2018.</li>
+        <li>OMS — <em>Global Status Report on Physical Activity</em>, 2022.</li>
+      </ul>
+    </div>
+
+    <div class="foot__bottom">
+      <p>Este recurso tiene fines educativos. No sustituye el consejo médico profesional.</p>
+      <p>© 2024 — Recurso educativo.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    background: var(--c-ink);
+    color: rgba(250,247,242,0.85);
+    padding: var(--space-xl) 0 var(--space-lg);
+    margin-top: var(--space-xl);
+  }
+
+  .foot__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: var(--space-lg);
+  }
+
+  .foot__logo {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-style: italic;
+    color: rgba(250,247,242,0.9);
+    letter-spacing: -0.02em;
+    display: block;
+    margin-bottom: var(--space-xs);
+  }
+
+  .foot__logo span { color: var(--c-coral); }
+  .foot__logo:hover { color: var(--c-paper); }
+
+  .foot__brand p {
+    color: rgba(255,255,255,0.45);
+    font-size: var(--fs-sm);
+    max-width: 320px;
+  }
+
+  .foot__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-md);
+  }
+
+  .foot__nav a {
+    color: rgba(255,255,255,0.55);
+    font-size: var(--fs-sm);
+  }
+
+  .foot__nav a:hover { color: var(--c-coral-soft); }
+
+  .foot__sources {
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: var(--space-md);
+  }
+
+  .foot__sources h4 {
+    color: rgba(255,255,255,0.65);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+  }
+
+  .foot__sources ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .foot__sources li {
+    font-size: var(--fs-xs);
+    color: rgba(255,255,255,0.4);
+  }
+
+  .foot__sources em { font-style: italic; }
+
+  .foot__bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .foot__bottom p {
+    font-size: var(--fs-xs);
+    color: rgba(255,255,255,0.3);
+  }
+
+  @media (max-width: 768px) {
+    .foot__top { flex-direction: column; }
+    .foot__bottom { flex-direction: column; }
+  }
+</style>

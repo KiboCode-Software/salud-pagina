@@ -1,0 +1,153 @@
+---
+const tips = [
+  {
+    title: '150 minutos por semana',
+    desc: 'Acumula al menos 150 minutos semanales de actividad física moderada. Puedes repartirlos en sesiones de 30 minutos, cinco días a la semana.',
+    tag: 'OMS',
+    color: 'var(--c-coral)',
+    bg: 'rgba(232,87,61,0.08)',
+  },
+  {
+    title: 'Camina a buen ritmo',
+    desc: 'Caminar es la forma más accesible de actividad física. Intenta caminar al menos 30 minutos al día a un ritmo que te permita hablar pero no cantar.',
+    tag: 'Aeróbico',
+    color: 'var(--c-teal)',
+    bg: 'var(--c-teal-bg)',
+  },
+  {
+    title: 'Baila',
+    desc: 'Bailar combina ejercicio cardiovascular con coordinación y diversión. No importa el estilo — lo importante es mover el cuerpo y disfrutar.',
+    tag: 'Diversión',
+    color: 'var(--c-violet)',
+    bg: 'var(--c-violet-soft)',
+  },
+  {
+    title: 'Fortalecimiento muscular',
+    desc: 'Incluye ejercicios de fortalecimiento al menos dos días por semana. Puedes utilizar tu propio peso: sentadillas, flexiones y planchas.',
+    tag: 'Fuerza',
+    color: 'var(--c-coral)',
+    bg: 'rgba(232,87,61,0.08)',
+  },
+  {
+    title: 'Estiramientos y movilidad',
+    desc: 'Dedica tiempo a estiramientos y movilidad articular. Ayuda a mantener la flexibilidad, prevenir lesiones y reducir la tensión muscular.',
+    tag: 'Flexibilidad',
+    color: 'var(--c-teal)',
+    bg: 'var(--c-teal-bg)',
+  },
+  {
+    title: 'Reduce el tiempo sedentario',
+    desc: 'Limita las horas consecutivas sentado. Levántate cada 30-60 minutos para caminar, estirarte o simplemente ponerte de pie.',
+    tag: 'Hábito',
+    color: 'var(--c-violet)',
+    bg: 'var(--c-violet-soft)',
+  },
+];
+---
+
+<section class="recs section" id="recomendaciones">
+  <div class="container">
+    <div class="recs__header animate-on-scroll">
+      <span class="tag" style="background: var(--c-violet-soft); color: var(--c-violet);">Comprender</span>
+      <h2>Recomendaciones<br/><em>prácticas</em></h2>
+      <p class="recs__sub">
+        No necesitas grandes cambios. Estas recomendaciones, respaldadas por la OMS y el CDC,
+        son simples y efectivas.
+      </p>
+    </div>
+
+    <div class="recs__grid">
+      {tips.map((tip, i) => (
+        <div class="recs__card animate-on-scroll" style={`transition-delay: ${i * 0.08}s`}>
+          <div class="recs__card-top">
+            <span class="recs__num" style={`color: ${tip.color}`} aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <span class="recs__tag" style={`background: ${tip.bg}; color: ${tip.color}`}>{tip.tag}</span>
+          </div>
+          <h3>{tip.title}</h3>
+          <p>{tip.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .recs__header {
+    margin-bottom: var(--space-xl);
+  }
+
+  .recs__header h2 {
+    font-size: var(--fs-3xl);
+    margin-top: var(--space-sm);
+  }
+
+  .recs__header em { color: var(--c-violet); }
+
+  .recs__sub {
+    font-size: var(--fs-lg);
+    color: var(--c-ink-soft);
+    max-width: 480px;
+    margin-top: var(--space-sm);
+    line-height: 1.6;
+  }
+
+  .recs__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+  }
+
+  .recs__card {
+    background: var(--c-white);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+
+  .recs__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  .recs__card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+  }
+
+  .recs__num {
+    font-family: var(--ff-display);
+    font-size: var(--fs-2xl);
+    font-weight: 900;
+    opacity: 0.25;
+    line-height: 1;
+  }
+
+  .recs__tag {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+  }
+
+  .recs__card h3 {
+    font-size: var(--fs-lg);
+    margin-bottom: var(--space-xs);
+  }
+
+  .recs__card p {
+    font-size: var(--fs-sm);
+    color: var(--c-ink-soft);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .recs__grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 540px) {
+    .recs__grid { grid-template-columns: 1fr; }
+  }
+</style>

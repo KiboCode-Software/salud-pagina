@@ -1,0 +1,181 @@
+---
+const highlights = [
+  { letter: 'C', title: 'Caminar', desc: 'Al trabajo, la tienda o el parque' },
+  { letter: 'E', title: 'Subir escaleras', desc: 'En lugar de usar el ascensor' },
+  { letter: 'B', title: 'Bailar', desc: 'En casa o con amigos' },
+  { letter: 'L', title: 'Tareas del hogar', desc: 'Barrer, limpiar, ordenar' },
+];
+---
+
+<section class="what section" id="que-es">
+  <div class="container">
+    <div class="what__intro animate-on-scroll">
+      <span class="tag" style="background: var(--c-teal-bg); color: var(--c-teal);">Descubrir</span>
+      <h2>¿Qué es la<br/><em>actividad física?</em></h2>
+    </div>
+
+    <div class="what__columns">
+      <div class="what__text animate-on-scroll">
+        <p class="what__lead">
+          Es cualquier movimiento corporal producido por los músculos esqueléticos
+          que exija gasto de energía — y va mucho más allá del gimnasio.
+        </p>
+        <p>
+          La actividad física incluye todas las actividades que implican movimiento corporal.
+          No necesitas correr maratones ni levantar pesas: caminar, bailar, subir escaleras
+          y hasta hacer las tareas del hogar cuentan.
+        </p>
+        <p>
+          Según la <strong>Organización Mundial de la Salud (OMS)</strong>, lo esencial es
+          evitar las largas horas de quietud y buscar oportunidades para moverse a lo
+          largo del día.
+        </p>
+      </div>
+
+      <aside class="what__aside animate-on-scroll" style="transition-delay: 0.15s">
+        <div class="what__pullquote">
+          <span class="what__pullquote-mark" aria-hidden="true">&ldquo;</span>
+          <p>Lo esencial es evitar las largas horas de quietud y buscar oportunidades para moverse.</p>
+          <cite>— OMS, 2020</cite>
+        </div>
+      </aside>
+    </div>
+
+    <div class="what__grid">
+      {highlights.map(({ letter, title, desc }, i) => (
+        <div class="what__card animate-on-scroll" style={`transition-delay: ${i * 0.08}s`}>
+          <span class="what__card-letter" aria-hidden="true">{letter}</span>
+          <h4>{title}</h4>
+          <p>{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .what__intro {
+    margin-bottom: var(--space-xl);
+  }
+
+  .what__intro h2 {
+    font-size: var(--fs-3xl);
+    margin-top: var(--space-sm);
+  }
+
+  .what__intro em {
+    color: var(--c-teal);
+  }
+
+  .what__columns {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    align-items: start;
+  }
+
+  .what__lead {
+    font-size: var(--fs-lg);
+    font-weight: 500;
+    color: var(--c-ink);
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+  }
+
+  .what__text p {
+    color: var(--c-ink-soft);
+    margin-bottom: var(--space-sm);
+  }
+
+  .what__text p:last-child { margin-bottom: 0; }
+
+  .what__pullquote {
+    position: relative;
+    background: var(--c-paper-warm);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    border-left: 4px solid var(--c-teal);
+  }
+
+  .what__pullquote-mark {
+    font-family: var(--ff-display);
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--c-teal-soft);
+    position: absolute;
+    top: 8px;
+    left: 16px;
+  }
+
+  .what__pullquote p {
+    font-family: var(--ff-display);
+    font-size: var(--fs-lg);
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--c-ink);
+    padding-top: var(--space-md);
+  }
+
+  .what__pullquote cite {
+    display: block;
+    font-family: var(--ff-body);
+    font-style: normal;
+    font-size: var(--fs-xs);
+    color: var(--c-ink-muted);
+    margin-top: var(--space-sm);
+  }
+
+  .what__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md);
+  }
+
+  .what__card {
+    background: var(--c-white);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md) var(--space-md) var(--space-lg);
+    text-align: center;
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+
+  .what__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  .what__card-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--c-teal-bg);
+    color: var(--c-teal);
+    border-radius: 50%;
+    font-family: var(--ff-display);
+    font-weight: 800;
+    font-size: var(--fs-lg);
+    margin-bottom: var(--space-sm);
+  }
+
+  .what__card h4 {
+    margin-bottom: 4px;
+  }
+
+  .what__card p {
+    font-size: var(--fs-sm);
+    color: var(--c-ink-muted);
+  }
+
+  @media (max-width: 768px) {
+    .what__columns { grid-template-columns: 1fr; }
+    .what__grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .what__grid { grid-template-columns: 1fr; }
+  }
+</style>

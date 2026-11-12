@@ -1,0 +1,486 @@
+<section class="quiz section" id="quiz">
+  <div class="container">
+    <div class="quiz__header animate-on-scroll">
+      <span class="tag" style="background: var(--c-teal-bg); color: var(--c-teal);">Comprobar</span>
+      <h2>¿Cuánto<br/><em>aprendiste?</em></h2>
+      <p class="quiz__sub">
+        Pon a prueba tus conocimientos con esta actividad interactiva.
+        Selecciona la respuesta correcta en cada pregunta.
+      </p>
+    </div>
+
+    <div class="quiz__container animate-on-scroll" id="quiz-app">
+      <!-- Start screen -->
+      <div class="quiz__start" id="quiz-start">
+        <div class="quiz__start-icon" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+            <circle cx="28" cy="28" r="27" stroke="var(--c-coral)" stroke-width="2"/>
+            <path d="M24 19l14 9-14 9V19z" fill="var(--c-coral)"/>
+          </svg>
+        </div>
+        <h3>Actividad interactiva</h3>
+        <p>3 preguntas sobre lo que aprendiste en esta página. ¿Listo para comenzar?</p>
+        <button class="quiz__btn quiz__btn--start" id="quiz-start-btn" type="button">
+          Comenzar
+        </button>
+      </div>
+
+      <!-- Quiz questions -->
+      <div class="quiz__body" id="quiz-body" hidden>
+        <div class="quiz__progress">
+          <div class="quiz__progress-text">
+            Pregunta <span id="quiz-current">1</span> de <span id="quiz-total">3</span>
+          </div>
+          <div class="quiz__progress-bar">
+            <div class="quiz__progress-fill" id="quiz-progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="quiz__question" id="quiz-question"></div>
+
+        <div class="quiz__options" id="quiz-options" role="radiogroup" aria-label="Opciones de respuesta"></div>
+
+        <div class="quiz__feedback" id="quiz-feedback" hidden>
+          <div class="quiz__feedback-icon" id="quiz-feedback-icon" aria-hidden="true"></div>
+          <p id="quiz-feedback-text"></p>
+        </div>
+
+        <div class="quiz__actions">
+          <button class="quiz__btn quiz__btn--next" id="quiz-next-btn" type="button" hidden>
+            Siguiente
+          </button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="quiz__results" id="quiz-results" hidden>
+        <div class="quiz__results-score" id="quiz-results-score"></div>
+        <h3 id="quiz-results-title"></h3>
+        <p id="quiz-results-text"></p>
+        <button class="quiz__btn quiz__btn--start" id="quiz-retry-btn" type="button">
+          Intentar de nuevo
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const questions = [
+    {
+      question: '¿Cuál es el tiempo mínimo recomendado de actividad física moderada a la semana para un adulto?',
+      options: [
+        '30 minutos al mes',
+        '150 minutos a la semana',
+        '5 horas diarias obligatorias',
+        'No es necesario hacer actividad física si se camina al trabajo',
+      ],
+      correct: 1,
+      feedback: '¡Correcto! Acumular al menos 150 minutos semanales de actividad física moderada ayuda a proteger tu corazón y mantener un peso saludable.',
+    },
+    {
+      question: '¿Cuál de los siguientes hábitos se considera una "pausa activa" en la jornada diaria?',
+      options: [
+        'Dormir una siesta de dos horas en la tarde',
+        'Detener la actividad cada cierto tiempo para hacer estiramientos y movimientos de movilidad articular',
+        'Ver televisión acostado en el sofá',
+        'Trabajar sin parar hasta terminar todas las tareas',
+      ],
+      correct: 1,
+      feedback: '¡Exacto! Las pausas activas rompen los periodos largos de sedentarismo, mejoran la circulación y previenen molestias musculoesqueléticas.',
+    },
+    {
+      question: '¿Cuál es uno de los principales beneficios de mantener una vida físicamente activa?',
+      options: [
+        'Aumentar los niveles de estrés y fatiga crónica',
+        'Prevenir la aparición de enfermedades crónicas como la hipertensión y reducir el sedentarismo',
+        'Obligar al cuerpo a soportar dolores musculares extremos',
+        'Ninguno, la actividad física solo sirve para deportistas de alto rendimiento',
+      ],
+      correct: 1,
+      feedback: '¡Muy bien! La actividad física es clave para la prevención de enfermedades y mejora notablemente el bienestar físico y mental de cualquier persona.',
+    },
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+  let answered = false;
+
+  const startScreen = document.getElementById('quiz-start')!;
+  const startBtn = document.getElementById('quiz-start-btn')!;
+  const body = document.getElementById('quiz-body')!;
+  const questionEl = document.getElementById('quiz-question')!;
+  const optionsEl = document.getElementById('quiz-options')!;
+  const feedbackEl = document.getElementById('quiz-feedback')!;
+  const feedbackIcon = document.getElementById('quiz-feedback-icon')!;
+  const feedbackText = document.getElementById('quiz-feedback-text')!;
+  const nextBtn = document.getElementById('quiz-next-btn')!;
+  const currentEl = document.getElementById('quiz-current')!;
+  const progressFill = document.getElementById('quiz-progress-fill')!;
+  const resultsScreen = document.getElementById('quiz-results')!;
+  const resultsScore = document.getElementById('quiz-results-score')!;
+  const resultsTitle = document.getElementById('quiz-results-title')!;
+  const resultsText = document.getElementById('quiz-results-text')!;
+  const retryBtn = document.getElementById('quiz-retry-btn')!;
+
+  function showQuestion() {
+    const q = questions[currentQuestion];
+    answered = false;
+    questionEl.textContent = q.question;
+    currentEl.textContent = String(currentQuestion + 1);
+    progressFill.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+
+    feedbackEl.hidden = true;
+    nextBtn.hidden = true;
+
+    optionsEl.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quiz__option';
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', 'false');
+      btn.innerHTML = `<span class="quiz__option-letter">${String.fromCharCode(65 + i)}</span><span class="quiz__option-text">${opt}</span>`;
+      btn.addEventListener('click', () => selectOption(i, btn));
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function selectOption(index: number, btn: HTMLButtonElement) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[currentQuestion];
+    const isCorrect = index === q.correct;
+    if (isCorrect) score++;
+
+    const buttons = optionsEl.querySelectorAll('.quiz__option');
+    buttons.forEach((b, i) => {
+      const el = b as HTMLButtonElement;
+      el.disabled = true;
+      el.setAttribute('aria-checked', String(i === index));
+      if (i === q.correct) el.classList.add('correct');
+      else if (i === index) el.classList.add('incorrect');
+    });
+
+    feedbackEl.hidden = false;
+    feedbackEl.className = `quiz__feedback ${isCorrect ? 'quiz__feedback--correct' : 'quiz__feedback--incorrect'}`;
+    feedbackIcon.innerHTML = isCorrect
+      ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+    feedbackText.textContent = isCorrect
+      ? q.feedback
+      : `La respuesta correcta era: "${q.options[q.correct]}". ${q.feedback}`;
+
+    nextBtn.hidden = false;
+    nextBtn.textContent = currentQuestion < questions.length - 1 ? 'Siguiente' : 'Ver resultados';
+  }
+
+  function showResults() {
+    body.hidden = true;
+    resultsScreen.hidden = false;
+
+    const pct = Math.round((score / questions.length) * 100);
+    resultsScore.innerHTML = `<div class="quiz__score-circle"><span>${score}</span>/<span>${questions.length}</span></div>`;
+
+    if (score === questions.length) {
+      resultsTitle.textContent = '¡Excelente!';
+      resultsText.textContent = 'Respondiste correctamente todas las preguntas. ¡Tienes un gran conocimiento sobre actividad física y bienestar!';
+    } else if (score >= 2) {
+      resultsTitle.textContent = '¡Muy bien!';
+      resultsText.textContent = 'Casi perfecto. Revisa el contenido para reforzar los puntos que fallaste.';
+    } else {
+      resultsTitle.textContent = '¡Sigue aprendiendo!';
+      resultsText.textContent = 'Te recomendamos repasar las secciones anteriores para reforzar tu conocimiento sobre actividad física.';
+    }
+  }
+
+  startBtn.addEventListener('click', () => {
+    startScreen.hidden = true;
+    body.hidden = false;
+    showQuestion();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      showQuestion();
+    } else {
+      progressFill.style.width = '100%';
+      showResults();
+    }
+  });
+
+  retryBtn.addEventListener('click', () => {
+    currentQuestion = 0;
+    score = 0;
+    resultsScreen.hidden = true;
+    body.hidden = false;
+    showQuestion();
+  });
+</script>
+
+<style>
+  .quiz__header { margin-bottom: var(--space-xl); }
+
+  .quiz__header h2 {
+    font-size: var(--fs-3xl);
+    margin-top: var(--space-sm);
+  }
+
+  .quiz__header em { color: var(--c-teal); }
+
+  .quiz__sub {
+    font-size: var(--fs-lg);
+    color: var(--c-ink-soft);
+    max-width: 480px;
+    margin-top: var(--space-sm);
+    line-height: 1.6;
+  }
+
+  .quiz__container {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--c-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+    border: 1px solid var(--c-border);
+    min-height: 400px;
+  }
+
+  #quiz-app [hidden] {
+    display: none !important;
+  }
+
+  /* ── Start screen ── */
+  .quiz__start {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    min-height: 340px;
+  }
+
+  .quiz__start h3 { font-size: var(--fs-xl); }
+
+  .quiz__start p {
+    color: var(--c-ink-muted);
+    max-width: 400px;
+  }
+
+  /* ── Shared button ── */
+  .quiz__btn {
+    font-family: var(--ff-body);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .quiz__btn--start {
+    background: var(--c-ink);
+    color: var(--c-paper);
+  }
+
+  .quiz__btn--start:hover {
+    background: var(--c-coral);
+    transform: translateY(-2px);
+  }
+
+  .quiz__btn--next {
+    background: var(--c-teal);
+    color: white;
+  }
+
+  .quiz__btn--next:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  /* ── Progress ── */
+  .quiz__body { width: 100%; }
+  .quiz__progress { margin-bottom: var(--space-lg); }
+
+  .quiz__progress-text {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--c-ink-muted);
+    margin-bottom: var(--space-xs);
+  }
+
+  .quiz__progress-bar {
+    height: 5px;
+    background: var(--c-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .quiz__progress-fill {
+    height: 100%;
+    background: var(--c-teal);
+    border-radius: var(--radius-full);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── Question ── */
+  .quiz__question {
+    font-family: var(--ff-display);
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    line-height: 1.3;
+  }
+
+  /* ── Options (dynamic, need :global) ── */
+  .quiz__options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  :global(.quiz__option) {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    background: var(--c-paper);
+    border: 1.5px solid var(--c-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    transition: all var(--transition);
+    font-family: var(--ff-body);
+    font-size: var(--fs-sm);
+    text-align: left;
+    width: 100%;
+  }
+
+  :global(.quiz__option:hover:not(:disabled)) {
+    border-color: var(--c-teal);
+    background: var(--c-teal-bg);
+  }
+
+  :global(.quiz__option:disabled) { cursor: default; }
+
+  :global(.quiz__option.correct) {
+    border-color: var(--c-success);
+    background: rgba(45, 138, 78, 0.06);
+  }
+
+  :global(.quiz__option.incorrect) {
+    border-color: var(--c-error);
+    background: rgba(192, 58, 43, 0.06);
+  }
+
+  :global(.quiz__option-letter) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--c-border);
+    font-weight: 700;
+    font-size: var(--fs-xs);
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background var(--transition), color var(--transition);
+  }
+
+  :global(.quiz__option.correct .quiz__option-letter) {
+    background: var(--c-success);
+    color: white;
+  }
+
+  :global(.quiz__option.incorrect .quiz__option-letter) {
+    background: var(--c-error);
+    color: white;
+  }
+
+  :global(.quiz__option-text) {
+    padding-top: 3px;
+    line-height: 1.5;
+  }
+
+  /* ── Feedback ── */
+  .quiz__feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+    animation: fadeInUp 0.3s ease;
+  }
+
+  .quiz__feedback--correct {
+    background: rgba(45, 138, 78, 0.06);
+    border: 1px solid rgba(45, 138, 78, 0.2);
+    color: #1a6b35;
+  }
+
+  .quiz__feedback--incorrect {
+    background: rgba(192, 58, 43, 0.06);
+    border: 1px solid rgba(192, 58, 43, 0.2);
+    color: #8b2920;
+  }
+
+  .quiz__feedback-icon { flex-shrink: 0; margin-top: 2px; }
+
+  .quiz__feedback p {
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+  }
+
+  /* ── Actions ── */
+  .quiz__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* ── Results ── */
+  .quiz__results {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    min-height: 340px;
+    animation: fadeInUp 0.4s ease;
+  }
+
+  :global(.quiz__score-circle) {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--c-teal);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ff-display);
+    font-size: var(--fs-2xl);
+    font-weight: 900;
+    margin-bottom: var(--space-sm);
+  }
+
+  .quiz__results h3 { font-size: var(--fs-xl); }
+
+  .quiz__results p {
+    color: var(--c-ink-soft);
+    max-width: 460px;
+    margin-bottom: var(--space-sm);
+  }
+
+  @media (max-width: 640px) {
+    .quiz__container { padding: var(--space-lg); }
+  }
+</style>
