@@ -12,6 +12,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.4.11"
+    "@astrojs/vercel": "^11.0.22",
+    "@vercel/blob": "^2.9.0",
+    "astro": "^7.4.11",
+    "xlsx": "^0.18.5"
   }
 }

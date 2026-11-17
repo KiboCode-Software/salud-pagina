@@ -10,7 +10,7 @@
     </div>
 
     <div class="quiz__container animate-on-scroll" id="quiz-app">
-      <!-- Start screen -->
+      <!-- Start screen with name -->
       <div class="quiz__start" id="quiz-start">
         <div class="quiz__start-icon" aria-hidden="true">
           <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
@@ -19,8 +19,12 @@
           </svg>
         </div>
         <h3>Actividad interactiva</h3>
-        <p>3 preguntas sobre lo que aprendiste en esta página. ¿Listo para comenzar?</p>
-        <button class="quiz__btn quiz__btn--start" id="quiz-start-btn" type="button">
+        <p>3 preguntas sobre lo que aprendiste en esta página.</p>
+        <div class="quiz__name-field">
+          <label for="quiz-name">Tu nombre</label>
+          <input type="text" id="quiz-name" placeholder="Escribe tu nombre completo" autocomplete="name" required />
+        </div>
+        <button class="quiz__btn quiz__btn--start" id="quiz-start-btn" type="button" disabled>
           Comenzar
         </button>
       </div>
@@ -57,6 +61,7 @@
         <div class="quiz__results-score" id="quiz-results-score"></div>
         <h3 id="quiz-results-title"></h3>
         <p id="quiz-results-text"></p>
+        <p class="quiz__saved-msg" id="quiz-saved-msg" hidden></p>
         <button class="quiz__btn quiz__btn--start" id="quiz-retry-btn" type="button">
           Intentar de nuevo
         </button>
@@ -105,9 +110,12 @@
   let currentQuestion = 0;
   let score = 0;
   let answered = false;
+  let userName = '';
+  const userAnswers: { pregunta: string; respuesta: string; correcta: boolean }[] = [];
 
+  const nameInput = document.getElementById('quiz-name') as HTMLInputElement;
   const startScreen = document.getElementById('quiz-start')!;
-  const startBtn = document.getElementById('quiz-start-btn')!;
+  const startBtn = document.getElementById('quiz-start-btn') as HTMLButtonElement;
   const body = document.getElementById('quiz-body')!;
   const questionEl = document.getElementById('quiz-question')!;
   const optionsEl = document.getElementById('quiz-options')!;
@@ -121,7 +129,12 @@
   const resultsScore = document.getElementById('quiz-results-score')!;
   const resultsTitle = document.getElementById('quiz-results-title')!;
   const resultsText = document.getElementById('quiz-results-text')!;
+  const savedMsg = document.getElementById('quiz-saved-msg')!;
   const retryBtn = document.getElementById('quiz-retry-btn')!;
+
+  nameInput.addEventListener('input', () => {
+    startBtn.disabled = nameInput.value.trim().length < 2;
+  });
 
   function showQuestion() {
     const q = questions[currentQuestion];
@@ -154,6 +167,12 @@
     const isCorrect = index === q.correct;
     if (isCorrect) score++;
 
+    userAnswers.push({
+      pregunta: q.question,
+      respuesta: q.options[index],
+      correcta: isCorrect,
+    });
+
     const buttons = optionsEl.querySelectorAll('.quiz__option');
     buttons.forEach((b, i) => {
       const el = b as HTMLButtonElement;
@@ -176,11 +195,40 @@
     nextBtn.textContent = currentQuestion < questions.length - 1 ? 'Siguiente' : 'Ver resultados';
   }
 
+  async function saveResponses() {
+    try {
+      const payload = {
+        nombre: userName,
+        respuestas: userAnswers,
+        puntaje: score,
+        total: questions.length,
+        fecha: new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' }),
+      };
+
+      const res = await fetch('/api/responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        savedMsg.textContent = 'Tus respuestas fueron guardadas correctamente.';
+        savedMsg.style.color = 'var(--c-success)';
+      } else {
+        savedMsg.textContent = 'No se pudieron guardar las respuestas.';
+        savedMsg.style.color = 'var(--c-error)';
+      }
+    } catch {
+      savedMsg.textContent = 'No se pudieron guardar las respuestas.';
+      savedMsg.style.color = 'var(--c-error)';
+    }
+    savedMsg.hidden = false;
+  }
+
   function showResults() {
     body.hidden = true;
     resultsScreen.hidden = false;
 
-    const pct = Math.round((score / questions.length) * 100);
     resultsScore.innerHTML = `<div class="quiz__score-circle"><span>${score}</span>/<span>${questions.length}</span></div>`;
 
     if (score === questions.length) {
@@ -193,9 +241,13 @@
       resultsTitle.textContent = '¡Sigue aprendiendo!';
       resultsText.textContent = 'Te recomendamos repasar las secciones anteriores para reforzar tu conocimiento sobre actividad física.';
     }
+
+    saveResponses();
   }
 
   startBtn.addEventListener('click', () => {
+    userName = nameInput.value.trim();
+    if (userName.length < 2) return;
     startScreen.hidden = true;
     body.hidden = false;
     showQuestion();
@@ -214,6 +266,8 @@
   retryBtn.addEventListener('click', () => {
     currentQuestion = 0;
     score = 0;
+    userAnswers.length = 0;
+    savedMsg.hidden = true;
     resultsScreen.hidden = true;
     body.hidden = false;
     showQuestion();
@@ -271,6 +325,42 @@
     max-width: 400px;
   }
 
+  .quiz__name-field {
+    width: 100%;
+    max-width: 340px;
+    text-align: left;
+    margin-top: var(--space-xs);
+  }
+
+  .quiz__name-field label {
+    display: block;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--c-ink);
+    margin-bottom: 6px;
+  }
+
+  .quiz__name-field input {
+    width: 100%;
+    font-family: var(--ff-body);
+    font-size: var(--fs-base);
+    padding: 10px 14px;
+    border: 1.5px solid var(--c-border);
+    border-radius: var(--radius-md);
+    background: var(--c-paper);
+    color: var(--c-ink);
+    transition: border-color var(--transition);
+  }
+
+  .quiz__name-field input:focus {
+    outline: none;
+    border-color: var(--c-teal);
+  }
+
+  .quiz__name-field input::placeholder {
+    color: var(--c-ink-muted);
+  }
+
   /* ── Shared button ── */
   .quiz__btn {
     font-family: var(--ff-body);
@@ -283,12 +373,18 @@
     transition: all var(--transition);
   }
 
+  .quiz__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
   .quiz__btn--start {
     background: var(--c-ink);
     color: var(--c-paper);
   }
 
-  .quiz__btn--start:hover {
+  .quiz__btn--start:hover:not(:disabled) {
     background: var(--c-coral);
     transform: translateY(-2px);
   }
@@ -478,6 +574,11 @@
     color: var(--c-ink-soft);
     max-width: 460px;
     margin-bottom: var(--space-sm);
+  }
+
+  .quiz__saved-msg {
+    font-size: var(--fs-sm);
+    font-weight: 600;
   }
 
   @media (max-width: 640px) {
