@@ -1,18 +1,15 @@
 import type { APIRoute } from 'astro';
-import { list } from '@vercel/blob';
+import { getQuizResponses } from '../../lib/quiz-storage';
 import * as XLSX from 'xlsx';
 
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
-  const { blobs } = await list({ prefix: 'quiz-responses/' });
+  const responses = await getQuizResponses();
 
   const rows: Record<string, string | number | boolean>[] = [];
 
-  for (const blob of blobs) {
-    const res = await fetch(blob.url);
-    const data = await res.json();
-
+  for (const data of responses) {
     const row: Record<string, string | number | boolean> = {
       Nombre: data.nombre,
       Fecha: data.fecha,

@@ -41,3 +41,21 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## Respuestas del cuestionario en Vercel Blob
+
+Las respuestas se guardan en un almacén **privado**, bajo `quiz-responses/`.
+El guardado, la consulta y la descarga de Excel comparten la configuración de
+`src/lib/quiz-storage.ts`.
+
+En Vercel, conecta el almacén al proyecto y habilita autenticación OIDC para
+Production y Preview. El código usa `BLOB_READ_WRITE_TOKEN_STORE_ID`, como en la
+configuración actual del proyecto, y admite `BLOB_STORE_ID` como alternativa.
+El SDK obtiene las credenciales OIDC de cada petición; también permite usar
+`BLOB_READ_WRITE_TOKEN` si se configura autenticación mediante token.
+
+Después de desplegar estos cambios, completa el cuestionario y comprueba
+`/api/responses` y `/api/download` para verificar la integración en Vercel.
+No es necesario copiar las variables de producción al repositorio.
+
+Referencia: [autenticación de Vercel Blob](https://vercel.com/docs/vercel-blob/using-blob-sdk#authentication).
