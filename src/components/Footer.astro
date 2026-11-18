@@ -1,3 +1,10 @@
+---
+const currentYear = new Intl.DateTimeFormat('es-CO', {
+  year: 'numeric',
+  timeZone: 'America/Bogota',
+}).format(new Date());
+---
+
 <footer class="foot">
   <div class="container">
     <div class="foot__top">
@@ -26,7 +33,7 @@
 
     <div class="foot__bottom">
       <p>Este recurso tiene fines educativos. No sustituye el consejo médico profesional.</p>
-      <p>© 2024 — Recurso educativo.</p>
+      <p>© {currentYear} — Recurso educativo.</p>
     </div>
   </div>
 </footer>
